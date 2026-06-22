@@ -1,4 +1,4 @@
-## libhp34401A
+# libhp34401A
 
-### Dependencies
+## Dependencies
 libserialport by sigrokproject https://github.com/sigrokproject/libserialport
