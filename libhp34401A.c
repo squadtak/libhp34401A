@@ -1,13 +1,13 @@
 /*
- libhp34401A Ver 1.1 2026-06-22
+ libhp34401A Ver 1.2 2026-06-23
  (c)2026 squad
 */
 
 #include "libhp34401A.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdarg.h>
 
 int is34401A(struct sp_port *port)
 {
@@ -36,13 +36,13 @@ int is34401A(struct sp_port *port)
 	return ret;
 }
 
-int hp34401ASendCommandWithRead(struct sp_port *port, char *command, size_t delay_read_data, char **readData)
+int hp34401ASendCommandWithRead(struct sp_port *port, char *command, size_t delayReadData, char **readData)
 {
 	int ret = 0;
 
 	if(hp34401ASendCommand(port, command)) return -1;
 
-	if(delay_read_data) usleep(delay_read_data);
+	if(delayReadData) usleep(delayReadData);
 
 	int retryFlag = 10;
 
@@ -112,14 +112,22 @@ int hp34401ASendCommand(struct sp_port *port, char *command)
 
 int hp34401APrintText(struct sp_port *port, size_t scrollDelay, char *format, ...)
 {
-	va_list vargs;
-	va_start(vargs, format);
+	va_list vList;
+	va_start(vList, format);
 
+	int ret = hp34401APrintTextV(port, scrollDelay, format, vList);
+
+	va_end(vList);
+	return ret;
+}
+
+int hp34401APrintTextV(struct sp_port *port, size_t scrollDelay, char *format, va_list vList)
+{
 	size_t strLen = 0;
-	if((strLen = vsnprintf(NULL, 0, format, vargs)) < 0) return -1;
+	if((strLen = vsnprintf(NULL, 0, format, vList)) < 0) return -1;
 
 	char buf[strLen + 1];
-	vsprintf(buf, format, vargs);
+	vsprintf(buf, format, vList);
 
 	char commandBuf[strlen("DISP:TEXT \"\"\r") + 12 + 1];
 	memcpy(commandBuf, "DISP:TEXT \"", strlen("DISP:TEXT \""));
@@ -139,6 +147,5 @@ int hp34401APrintText(struct sp_port *port, size_t scrollDelay, char *format, ..
 		if(hp34401ASendCommand(port, commandBuf)) return -3;
 	}
 
-	va_end(vargs);
 	return 0;
 }
