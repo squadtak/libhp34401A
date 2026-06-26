@@ -1,5 +1,5 @@
 /*
- libhp34401A Ver 1.2 2026-06-23
+ libhp34401A Ver 1.6 2026-06-26
  (c)2026 squad
 */
 
@@ -9,31 +9,72 @@
 #include <string.h>
 #include <unistd.h>
 
-int is34401A(struct sp_port *port)
+int gotIDNFlag = 0;
+char *gotBrand = NULL;
+char *gotModel = NULL;
+unsigned int gotFirmVer = 0;
+unsigned int gotIoVer = 0;
+unsigned int gotFrontVer = 0;
+
+int hp34401AGetIDN(struct sp_port *port, char **brand, char **model, unsigned int *firmVer, unsigned int *ioVer, unsigned int *frontVer)
 {
-	char *buf;
-
-	if(hp34401ASendCommandWithRead(port, "*IDN?", 300000, &buf) != 0) return -1;
-
-	char *model_pos = NULL;
-	if((model_pos = strchr((char *)buf, ',')) == NULL){
-		free(buf);
-		return -2;
-	}
-
-	model_pos += 1; // ,
-
-	if(strtok(model_pos, ",") == NULL){
-		free(buf);
-		return -3;
-	}
-
 	int ret = 0;
 
-	if(strstr(model_pos, "34401A") - model_pos == 0 && strlen(model_pos) == strlen("34401A")) ret = 1;
+	if(!gotIDNFlag){
 
-	free(buf);
+		char *buf;
+		if(hp34401ASendCommandWithRead(port, "*IDN?", 300000, &buf) != 0) return -1;
+
+		char *brandPos = NULL;
+		if(!(brandPos = strtok(buf, ","))) return -2;
+		if(!(gotBrand = calloc(strlen(brandPos) + 1, 1))) return -3;
+		memcpy(gotBrand, brandPos, strlen(brandPos));
+
+		char *modelPos = NULL;
+		if(!(modelPos = strtok(NULL, ","))) { ret = -4; goto err0; }
+		if(!(gotModel = calloc(strlen(modelPos) + 1, 1))) { ret = -5; goto err0; }
+		memcpy(gotModel, modelPos, strlen(modelPos));
+
+		if(!strtok(NULL, ",")) { ret = -6; goto err1; } //0
+
+		char *firmVerPos = NULL;
+		if(!(firmVerPos = strtok(NULL, "-"))) { ret = -7; goto err1; }
+		gotFirmVer = strtoul(firmVerPos, NULL, 10);
+
+		char *ioVerPos = NULL;
+		if(!(ioVerPos = strtok(NULL, "-"))) { ret = -8; goto err1; }
+		gotIoVer = strtoul(ioVerPos, NULL, 10);
+
+		char *frontVerPos = NULL;
+		if(!(frontVerPos = strtok(NULL, "\0"))) { ret = -9; goto err1; }
+		gotFrontVer = strtoul(frontVerPos, NULL, 10);
+
+		free(buf);
+		gotIDNFlag = 1;
+	}
+
+	if(brand) *brand = gotBrand;
+	if(model) *model = gotModel;
+	if(firmVer) *firmVer = gotFirmVer;
+	if(ioVer) *ioVer = gotIoVer;
+	if(frontVer) *frontVer = gotFrontVer;
+
 	return ret;
+
+err1:
+	free(gotModel);
+err0:
+	free(gotBrand);
+	return ret;
+}
+
+int is34401A(struct sp_port *port)
+{
+	if(!gotIDNFlag) if(hp34401AGetIDN(port, NULL, NULL, NULL, NULL, NULL)) return -1;
+
+	if(!strcmp(gotModel, "34401A")) return 1;
+
+	return 0;
 }
 
 int hp34401ASendCommandWithRead(struct sp_port *port, char *command, size_t delayReadData, char **readData)

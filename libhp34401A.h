@@ -1,5 +1,5 @@
 /*
- libhp34401A Ver 1.2 2026-06-23
+ libhp34401A Ver 1.3 2026-06-26
  (c)2026 squad
 */
 
@@ -10,10 +10,12 @@
 #include <stdarg.h>
 #include <libserialport.h>
 
-int open_comport(char *portname, int baudrate, int bits, enum sp_parity parity, int stopbits, enum sp_flowcontrol flowcontrol, struct sp_port **port);
+int hp34401AGetIDN(struct sp_port *port, char **brand, char **model, unsigned int *firmVer, unsigned int *ioVer, unsigned int *frontVer);
+int is34401A(struct sp_port *port);
+
 int hp34401ASendCommand(struct sp_port *port, char *command);
 int hp34401ASendCommandWithRead(struct sp_port *port, char *command, size_t delayReadData, char **readData);
-int is34401A(struct sp_port *port);
+
 int hp34401APrintText(struct sp_port *port, size_t scrollDelay, char *format, ...);
 int hp34401APrintTextV(struct sp_port *port, size_t scrollDelay, char *format, va_list vList);
 
