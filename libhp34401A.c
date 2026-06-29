@@ -1,5 +1,5 @@
 /*
- libhp34401A Ver 1.3 2026-06-26
+ libhp34401A Ver 1.4 2026-06-29
  (c)2026 squad
 */
 
@@ -8,6 +8,32 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+unsigned short hp34401ACalChksumTableEarly[] =
+{
+	0x004,
+	0x00A,
+	0x014,
+	0x04A,
+	0x07C,
+	0x0A2,
+	0x0D8,
+	0x112,
+	0x158,
+};
+
+unsigned short hp34401ACalChksumTableLater[] =
+{
+	0x004,
+	0x00A,
+	0x060,
+	0x096,
+	0x0C8,
+	0x0EE,
+	0x124,
+	0x15E,
+	0x1A4,
+};
 
 int gotIDNFlag = 0;
 char *gotBrand = NULL;
