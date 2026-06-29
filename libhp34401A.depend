@@ -1,11 +1,11 @@
 # depslib dependency file v1.0
-1782729917 source:d:\codeblocks\c_snippets\libhp34401a\libhp34401a.c
+1782735466 source:d:\codeblocks\c_snippets\libhp34401a\libhp34401a.c
 	"libhp34401A.h"
 	<stdlib.h>
 	<string.h>
 	<unistd.h>
 
-1782730003 d:\codeblocks\c_snippets\libhp34401a\libhp34401a.h
+1782735472 d:\codeblocks\c_snippets\libhp34401a\libhp34401a.h
 	<stdio.h>
 	<stdarg.h>
 	<libserialport.h>

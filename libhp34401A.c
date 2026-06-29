@@ -1,5 +1,5 @@
 /*
- libhp34401A Ver 1.4 2026-06-29
+ libhp34401A Ver 1.5 2026-06-29
  (c)2026 squad
 */
 
@@ -9,7 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 
-unsigned short hp34401ACalChksumTableEarly[] =
+unsigned short hp34401ACalChksumTableEarly[9] =
 {
 	0x004,
 	0x00A,
@@ -22,7 +22,7 @@ unsigned short hp34401ACalChksumTableEarly[] =
 	0x158,
 };
 
-unsigned short hp34401ACalChksumTableLater[] =
+unsigned short hp34401ACalChksumTableLater[9] =
 {
 	0x004,
 	0x00A,

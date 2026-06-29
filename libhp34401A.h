@@ -1,5 +1,5 @@
 /*
- libhp34401A Ver 1.4 2026-06-29
+ libhp34401A Ver 1.5 2026-06-29
  (c)2026 squad
 */
 
@@ -10,7 +10,7 @@
 #include <stdarg.h>
 #include <libserialport.h>
 
-extern unsigned short hp34401ACalChksumTableEarly[];
+extern unsigned short hp34401ACalChksumTableEarly[9];
 /*
 {
 	0x004,
@@ -25,7 +25,7 @@ extern unsigned short hp34401ACalChksumTableEarly[];
 }
 */
 
-extern unsigned short hp34401ACalChksumTableLater[];
+extern unsigned short hp34401ACalChksumTableLater[9];
 /*
 {
 	0x004,
