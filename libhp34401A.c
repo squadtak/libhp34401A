@@ -1,7 +1,12 @@
 /*
- libhp34401A Ver 1.5 2026-06-29
- (c)2026 squad
-*/
+ * \file		libhp34401A.h
+ * \brief		library for HP/Agilent/Keysight(HPAK) 34401A
+ * \author		squad
+ * \version		Ver 1.6
+ * \date		2026-06-30
+ * \copyright	Copyright 2026 squad
+ * \license		This library is released under the MIT license.
+ */
 
 #include "libhp34401A.h"
 
@@ -9,7 +14,7 @@
 #include <string.h>
 #include <unistd.h>
 
-unsigned short hp34401ACalChksumTableEarly[9] =
+const unsigned short hp34401ACalChksumTableEarly[9] =
 {
 	0x004,
 	0x00A,
@@ -22,7 +27,7 @@ unsigned short hp34401ACalChksumTableEarly[9] =
 	0x158,
 };
 
-unsigned short hp34401ACalChksumTableLater[9] =
+const unsigned short hp34401ACalChksumTableLater[9] =
 {
 	0x004,
 	0x00A,
@@ -103,6 +108,18 @@ int is34401A(struct sp_port *port)
 	return 0;
 }
 
+int hp34401ASendCommand(struct sp_port *port, char *command)
+{
+	char sendBuf[strlen(command)];
+	memcpy(sendBuf, command, strlen(command));
+	sendBuf[strlen(command)] = '\n';
+
+	if(sp_blocking_write(port, sendBuf, strlen(command) + 1, 1000) < strlen(command) + 1) return -1;
+	usleep(20000);
+
+	return 0;
+}
+
 int hp34401ASendCommandWithRead(struct sp_port *port, char *command, size_t delayReadData, char **readData)
 {
 	int ret = 0;
@@ -163,18 +180,6 @@ retry:
 	*(*readData + readDataLen) = '\0';
 
 	return ret;
-}
-
-int hp34401ASendCommand(struct sp_port *port, char *command)
-{
-	char sendBuf[strlen(command)];
-	memcpy(sendBuf, command, strlen(command));
-	sendBuf[strlen(command)] = '\n';
-
-	if(sp_blocking_write(port, sendBuf, strlen(command) + 1, 1000) < strlen(command) + 1) return -1;
-	usleep(20000);
-
-	return 0;
 }
 
 int hp34401APrintText(struct sp_port *port, size_t scrollDelay, char *format, ...)
